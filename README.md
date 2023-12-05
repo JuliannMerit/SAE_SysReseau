@@ -1,11 +1,11 @@
 
 # SAE 3.03 - Système et Réseaux
 ## *Réseau social Tuit'o*
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Thomas-Webber/SAE-3.03?style=for-the-badge)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/JuliannMerit/SAE_SysReseau?style=for-the-badge)
 
-![GitHub last commit](https://img.shields.io/github/last-commit/Thomas-Webber/SAE-3.03?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/JuliannMerit/SAE_SysReseau?style=for-the-badge)
 
-![GitHub issues](https://img.shields.io/github/issues/Thomas-Webber/SAE-3.03?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/JuliannMerit/SAE_SysReseau?style=for-the-badge)
 ### [Sujet](sujetSAE303.pdf)
 
 ## Description du projet
