@@ -3,7 +3,7 @@
 ## *Réseau social Tuit'o*
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/JuliannMerit/SAE_SysReseau?style=for-the-badge)
 
-![GitHub last commit](https://img.shields.io/github/last-commit/JuliannMerit/SAE_SysReseau?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/JuliannMerit/SAE_SysReseau/main?style=for-the-badge)
 
 ![GitHub issues](https://img.shields.io/github/issues/JuliannMerit/SAE_SysReseau?style=for-the-badge)
 ### [Sujet](sujetSAE303.pdf)
