@@ -2,6 +2,9 @@
 # SAE 3.03 - Système et Réseaux
 ## *Réseau social Tuit'o*
 
+## Théo AVIGNON
+## Juliann MERIT
+
 ## Description du projet
 Le projet consiste à créer une application client-serveur d'un réseau social nommé `Tuit'o`.
 
