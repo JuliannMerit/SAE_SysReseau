@@ -13,7 +13,7 @@ public class Server {
      */
     private ServerSocket serverSocket;
 
-    private List<Session> sessions;
+    private List<User> users;
 
     /**
      * Constructeur de la classe Server
@@ -24,7 +24,7 @@ public class Server {
     public Server(int port) throws IOException {
         this.serverSocket = new ServerSocket(port);
         System.out.println("Server listening on port " + port);
-        this.sessions = new ArrayList<>();
+        this.users = new ArrayList<>();
     }
 
     /**
@@ -43,21 +43,75 @@ public class Server {
      */
     public void accept() throws IOException {
         Socket socket = this.serverSocket.accept();
-        System.out.println("New client connected : " + socket.getInetAddress().getHostAddress() + " on port " + socket.getPort() + ".");
-        this.addSession(new Session(socket, this));
+        System.out.println("New client connected : " + socket.getInetAddress().getHostAddress() + " on port "
+                + socket.getPort() + ".");
         Session session = new Session(socket, this);
         session.start();
     }
 
     /**
-     * Boucle infinie d'acceptation de connexions
+     * Boucle infinie d'acceptation de connexions (seul fonction réel du serveur
+     * pour le moment)
      * 
      * @throws IOException Si la connexion ne peut pas être acceptée
      */
     public void run() throws IOException {
+        new ThreadServer(this).start();
         while (true) {
             this.accept();
         }
+    }
+
+    /**
+     * Retourne la liste des utilisateurs connectés
+     * 
+     * @return La liste des utilisateurs connectés
+     */
+    public List<User> getUsers() {
+        return this.users;
+    }
+
+    /**
+     * Retourne l'utilisateur avec le nom donné
+     * 
+     * @param username Le nom de l'utilisateur à retourner
+     * @return L'utilisateur avec le nom donné
+     */
+    public User getUser(String username) {
+        for (User user : this.users) {
+            if (user.getName().equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Supprime l'utilisateur avec le nom donné, ainsi ses likes, et listes
+     * d'abonnements dont il fait partie
+     * 
+     * @param username Le nom de l'utilisateur à supprimer
+     */
+    public void removeUser(String username) {
+        User userToRemove = null;
+
+        for (User user : this.users) {
+            if (user.getName().equals(username)) {
+                userToRemove = user;
+            }
+        }
+        for (User user : this.users) {
+            if (user.getAbonnements().contains(userToRemove)) {
+                user.removeAbonnement(userToRemove);
+            }
+            for (Message message : user.getMessages()) {
+                if (message.getLikers().contains(userToRemove)) {
+                    message.removeLiker(userToRemove);
+                }
+            }
+        }
+
+        this.users.remove(userToRemove);
     }
 
     public static void main(String[] args) {
@@ -67,17 +121,5 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void addSession(Session session) {
-        this.sessions.add(session);
-    }
-
-    public void removeSession(Session session) {
-        this.sessions.remove(session);
-    }
-
-    public List<Session> getSessions() {
-        return this.sessions;
     }
 }

@@ -2,11 +2,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-import java.util.ArrayList;
+import java.io.ObjectInputStream;
 
 /**
  * Classe Client
@@ -17,9 +14,7 @@ public class Client {
      */
     private Socket socket;
 
-    private List<Client> abonnes;
-
-    private List<Client> abonnements;
+    private User user;
 
     /**
      * Constructeur de la classe Client
@@ -32,8 +27,7 @@ public class Client {
     public Client(String host, int port) throws UnknownHostException, IOException {
         this.socket = new Socket(host, port);
         System.out.println("Connected to server on port " + port);
-        this.abonnes = new ArrayList<>();
-        this.abonnements = new ArrayList<>();
+        this.user = null;
     }
 
     /**
@@ -43,54 +37,6 @@ public class Client {
      */
     public void close() throws IOException {
         this.socket.close();
-    }
-
-    /**
-     * Ajoute un abonnement au client
-     * @param client Le client à ajouter
-     */
-    public void addAbonnement(Client client) {
-        this.abonnements.add(client);
-    }
-
-    /**
-     * Retire un abonnement du client
-     * @param client Le client à retirer
-     */
-    public void removeAbonnement(Client client) {
-        this.abonnements.remove(client);
-    }
-
-    /**
-     * Retourne la liste des abonnements du client
-     * @return La liste des abonnements du client
-     */
-    public List<Client> getAbonnements() {
-        return this.abonnements;
-    }
-
-    /**
-     * Ajoute un abonné au client
-     * @param client Le client à ajouter
-     */
-    public void addAbonne(Client client) {
-        this.abonnes.add(client);
-    }
-
-    /**
-     * Retire un abonné du client
-     * @param client Le client à retirer
-     */
-    public void removeAbonne(Client client) {
-        this.abonnes.remove(client);
-    }
-
-    /**
-     * Retourne la liste des abonnés du client
-     * @return La liste des abonnés du client
-     */
-    public List<Client> getAbonnes() {
-        return this.abonnes;
     }
 
     /**
@@ -110,25 +56,56 @@ public class Client {
      * @return Le message reçu
      * @throws IOException Si le message ne peut pas être reçu
      */
-    public String receive() throws IOException {
-        return new BufferedReader(new InputStreamReader(this.socket.getInputStream())).readLine();
+    public User receive() {
+        try {
+            return (User) new ObjectInputStream(this.socket.getInputStream()).readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Affiche les messages des abonnements du user connecté
+     */
+    public void affichage() {
+        for (User followed : this.user.getAbonnements()) {
+            for (Message message : followed.getMessages()) {
+                System.out.println(followed.getName() + " : " + message.getContent() + " ( date : " + message.getDate()
+                        + ")" + " (" + message.getId() + ")" + " (" + message.getNbLikes() + " likes )");
+            }
+        }
+    }
+
+    /**
+     * Boucle infinie d'envoi de messages au serveur (seul fonction réel du client
+     * pour le moment)
+     * 
+     * @throws IOException Si le message ne peut pas être envoyé
+     */
+    public void run() throws IOException {
+        Scanner scan = new Scanner(System.in);
+        while (true) {
+            String message = scan.nextLine();
+            this.send(message);
+            if (message.equals("exit")) {
+                break;
+            }
+            this.user = this.receive();
+            if (this.user != null) {
+                System.out.println("Abonnements :" + this.user.getAbonnements());
+                System.out.println("Messages :");
+                this.affichage();
+            }
+        }
+        scan.close();
     }
 
     public static void main(String[] args) {
         try {
             Client client = new Client("localhost", 8081);
-            Scanner scan = new Scanner(System.in);
-
-            while (true) {
-                String message = scan.nextLine();
-                client.send(message);
-                if (message.equals("exit")) {
-                    break;
-                }
-                System.out.println("Server: " + client.receive());
-            }
+            client.run();
             client.close();
-            scan.close();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
