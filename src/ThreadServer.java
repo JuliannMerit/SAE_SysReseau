@@ -8,6 +8,7 @@ public class ThreadServer extends Thread {
         this.server = server;
     }
 
+    @Override
     public void run() {
         try {
             Scanner commande = new Scanner(System.in);
@@ -26,6 +27,7 @@ public class ThreadServer extends Thread {
                     this.server.removeUser(username);
                 }
             }
+            commande.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
